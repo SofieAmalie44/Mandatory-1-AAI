@@ -1,102 +1,86 @@
-\documentclass{article}
-% Pakker for dansk sprog og font
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage[danish]{babel} 
-% Pakke for at inkludere billeder
-\usepackage{graphicx} 
-% Pakke for matematiske symboler
-\usepackage{amsmath} 
-% Juster sidebredden/marginer for at få plads til to sider
-\usepackage[margin=1in]{geometry} 
+\documentclass[10pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{authblk}
 
-\title{Regressionsanalyse og Klassifikation af Bil-data: Forudsigelse af Brændstofeffektivitet}
-\author{Dit Navn}
-\date{\today} 
+\title{Regression-analysis and Classification of Cars-data: Predicting Miles per Gallon}
+\author{Viktor Bach \\ Sofie Thorlund}
+\date{23/10/2025}
 
 \begin{document}
 \maketitle
+\begin{center}
+Course: Applied Artificial Intelligence \\
+Instructor: Henrik Strøm
+\end{center}
 
-% -----SELVE TEKSEN STARTER HER-----
+\begin{abstract}
+This article applies supervised machine learning techniques to the ``cars.csv'' data set using both regression and logistic regression. The objective is to build, evaluate, and optimize models that predict vehicle fuel efficiency and classify vehicles according to this efficiency. Feature engineering, model selection, and hyperparameter tuning are used to improve performance.
+\end{abstract}
 
-\section*{Abstract}
-Denne artikel præsenterer resultaterne af regressions- og logistisk regressionsanalyse lavet på biler fra datasættet 'cars.csv'. 
-Målet var at forudsige brændstofeffektivitet (MPG) og klassificere biler som værende højeffektiv ved brug af finjusterede maskinlæringsmodeller (Ridge, Lasso og Logistisk Regression). 
-Resultaterne viser at de finjusterede modeller præsterer robust, især den logistiske regressionsmodel demonstrerer god diskriminationsevne med AUC på 0.95.
+\section{Introduction}
+Machine learning is widely used to model real-world data and make predictions from observed patterns. In this research article, we explore two predictive modeling approaches using a cars dataset: a regression model to predict miles per gallon (MPG) and a logistic regression model to classify cars into ``high-efficiency'' or ``low-efficiency'' categories. The goal is to evaluate the extent to which linear models can capture relationships between MPG and key automotive features.
 
-\section{Introduktion og Problemformulering}
+\section{Methods}
+\subsection{Dataset and pre-processing}
+The data set contains various attributes of cars, including horsepower, weight, displacement, and number of cylinders. Missing values (marked '?') were removed and the numerical characteristics were standardized using z-score normalization. The target variable for the regression model is MPG and for the classification task, the vehicles were labeled ``1'' if their MPG was above the median and ``0'' otherwise. The models were trained using the Sci-kit-learn library and plotted using matplot library.
 
-Formålet med denne analyse er at undersøge, hvor præcist bilers brændstofforbrug kan forudsiges og klassificeres baseret på tre nøglefeatures: vægt, hestekræfter og cylinderantal. 
-Analysen er opdelt i to hovedproblemer, som skal besvares:
+\subsection{Regression model}
+A Ridge Regression model was selected to predict MPG due to its ability to handle multicollinearity. The model was trained using an 80/20 train-test split and evaluated using Root Mean Squared Error (RMSE) and $R^2$ score.
 
-\begin{enumerate}
-    \item \textbf{Regressionsproblem:} Hvor præcist kan vi forudsige bilens kontinuerlige brændstofeffektivitet (MPG) ved hjælp af lineære og regulariserede regressionsmodeller (Ridge og Lasso)?
-    \item \textbf{Klassifikationsproblem:} Hvor pålideligt kan biler klassificeres som havende 'høj' eller 'lav' effektivitet (baseret på median MPG) ved brug af logistisk regression?
-\end{enumerate}
+\subsection{Logistic regression model}
+Logistic regression was applied to classify cars by fuel efficiency. The model was trained using the same split and evaluated using accuracy, precision, recall, and the ROC-AUC (Area Under the Curve) score. Class imbalance was addressed by enabling class balancing during model training.
 
-\section{Metode}
+\section{Results}
+A summary of model performance is shown in Table~\ref{tab:results}.
 
-Datasættet \texttt{cars.csv} blev indhentet. Data blev renset for manglende værdier (markeret som '?'), og features \texttt{weight}, \texttt{horsepower} og \texttt{cylinders} blev valgt som prediktorer. Data blev opdelt i et træningssæt og et testsæt (80/20 split) én gang for begge problemtyper. Alle modeller blev trænet ved brug af Scikit-learn, og finjustering blev udført ved hjælp af \texttt{Pipeline} i kombination med \texttt{GridSearchCV} og krydsvalidering for at sikre robuste resultater.
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+Model & Metric & Value \
+\hline
+Ridge Regression & RMSE & 4.15 \
+Ridge Regression & R$^2$ & 0.658 \
+Logistic Regression & ROC AUC & 0.953 \
+\hline
+\end{tabular}
+\caption{Performance metrics for regression and classification models.}
+\label{tab:results}
+\end{table}
 
-\section{Resultater og Diskussion}
+Figure~\ref{fig:regression} shows predicted versus actual MPG for the regression model. The Ridge Regression achieved an RMSE of 4.15 and an R$^2$ score of 0.658 on the test set. The Ridge model demonstrates a strong linear relationship between predictions and ground truth.
 
-Herunder vises resultaterne fra de finjusterede modeller for at besvare problemformuleringerne.
-
-\subsection{Regressionsanalyse (MPG Prediction)}
-
-Den indledende Lineære Regressionsmodel leverede en $R^2$ score på \textbf{0.817} på testsættet. 
-Ved at anvende \texttt{RidgeCV} og \texttt{LassoCV} blev de optimale regulariseringsparametre (\(\alpha\)) fundet, for at maksimere ydeevnen og minimere overfitting.
-
-De finjusterede Ridge- og Lasso-modeller leverede stort set identiske resultater på testsættet, med en $R^2$ score (ca. 0.817) tæt på baselinemodellen. 
-Dette indikerer, at den oprindelige lineære regressionsmodel allerede var meget stabil, og at yderligere regularisering ikke var nødvendig for at forbedre den prædiktive præcision. 
-Fig. 1 illustrerer, at forudsigelserne fra både Ridge og Lasso ligger meget tæt på den ideelle diagonale linje, hvilket bekræfter modellernes stærke forudsigende evne.
-
-% --- Visualisering 1: Ridge vs Lasso ---
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.75\columnwidth]{../models/ridge_vs_lasso_after_finetuning.png}
-    \caption{Sammenligning af forudsigelser mellem Ridge og Lasso efter finjustering. De fleste datapunkter ligger tæt på den stiplede linje, hvilket indikerer høj præcision i forudsigelsen af MPG.}
+    \includegraphics[width=0.7\textwidth]{figures/regression_pred_vs_actual.png}
+    \caption{Predicted vs Actual MPG (Ridge Regression)}
     \label{fig:regression}
 \end{figure}
 
-\subsection{Klassifikationsanalyse (High Efficiency Prediction)}
+The logistic regression model achieved high separability with a ROC AUC of 0.953 as shown in the ROC curve in Figure~\ref{fig:logistic}.
 
-Logistisk regressionblev brugt til at klassificere biler som værende 'højeffektiv' (\(mpg > median\)). Efter finjusteringen af parameteren \(C\) via \texttt{LogisticRegressionCV} viste modellen gode diskriminationsevner.
-
-\textbf{Pålidelighed (AUC):} Modellen opnåede en AUC (Area Under the Curve) på \textbf{0.95} på test:
-
-% --- Visualisering 2: ROC Kurve ---
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.7\columnwidth]{../models/roc_curve_after_finetuning.png}
-    \caption{ROC-kurve for den finjusterede logistiske regressionsmodel, som viser en AUC på 0.95. Linjen ligger langt over den tilfældige gættelinje (Random Guess).}
-    \label{fig:roc}
+    \includegraphics[width=0.45\linewidth]{figures/logistic_roc.png}
+    
+    \caption{ROC curve (left) and confusion matrix (right) for the logistic model.}
+    \label{fig:logistic}
 \end{figure}
 
-\textbf{Præcision (Forvirringsmatrix):} Forvirringsmatricen (Fig. 3) bekræfter modellens præcise klassifikation. Ud af 79 observationer i testsættet:
+\section{Discussion}
+The Ridge regression model generalized well to unseen data, with low RMSE and high $R^2$, showing that horsepower, weight, and displacement are strong predictors of fuel economy. Logistic regression provided clear classification boundaries and revealed that lighter vehicles with lower horsepower are more likely to be fuel-efficient.
+
+\section{Conclusion}
+Both regression and classification objectives were successfully addressed using linear models. Future work may include polynomial features or non-linear models such as Random Forests to further improve performance.
+
+\section*{References}
 \begin{itemize}
-    \item 36 biler med lav effektivitet blev korrekt klassificeret (True Negatives, TN).
-    \item 36 biler med høj effektivitet blev korrekt klassificeret (True Positives, TP).
-    \item Kun 1 bil blev fejlklassificeret som 'høj', selvom den var 'lav' (False Positive, FP).
-    \item 6 biler blev fejlklassificeret som 'lav', selvom de var 'høj' (False Negatives, FN).
+    \item Scikit-learn documentation
+    \item Course materials by Henrik Strøm
 \end{itemize}
-Dette resulterer i en meget høj \textit{accuracy}, hvilket besvarer, at modellen er yderst pålidelig.
-
-% --- Visualisering 3: Confusion Matrix ---
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.6\columnwidth]{../models/confusion_matrix_after_finetuning.png}
-    \caption{Forvirringsmatrix for den finjusterede logistiske regressionsmodel. Matricen viser 36 korrekte klassifikationer i hver klasse, hvilket bekræfter pålidelig prædiktion.}
-    \label{fig:cm}
-\end{figure}
-
-\section{Konklusion}
-
-Vi har opnået og finjusteret modeller for både regressions- og klassifikationsproblemer. Regressionsmodellerne (Ridge og Lasso) forudsiger MPG med høj nøjagtighed ($R^2 \approx 0.817$), hvilket indikerer et stærkt lineært forhold mellem de valgte features og brændstofeffektiviteten. Den finjusterede logistiske regressionsmodel er \textbf{yderst pålidelig} og effektiv til binær klassifikation af bilers effektivitet, bekræftet af en AUC på 0.95 og en minimal fejlrate observeret i forvirringsmatricen.
-
-\bibliographystyle{plain}
-\bibliography{references}
-Scikit-learn dokumentation: \texttt{https://scikit-learn.org/stable/documentation.html}
-Fag materiale af Henrik Strøm
 
 \end{document}
