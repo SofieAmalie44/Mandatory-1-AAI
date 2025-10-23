@@ -47,7 +47,7 @@ Herunder vises resultaterne fra de finjusterede modeller for at besvare problemf
 Den indledende Lineære Regressionsmodel leverede en $R^2$ score på \textbf{0.817} på testsættet. 
 Ved at anvende \texttt{RidgeCV} og \texttt{LassoCV} blev de optimale regulariseringsparametre (\(\alpha\)) fundet, for at maksimere ydeevnen og minimere overfitting.
 
-De finjusterede Ridge- og Lasso-modeller leverede stort set identiske resultater på testsættet, med en $R^2$ score (ca. 0.817) tæt på baselinemodellen12. 
+De finjusterede Ridge- og Lasso-modeller leverede stort set identiske resultater på testsættet, med en $R^2$ score (ca. 0.817) tæt på baselinemodellen. 
 Dette indikerer, at den oprindelige lineære regressionsmodel allerede var meget stabil, og at yderligere regularisering ikke var nødvendig for at forbedre den prædiktive præcision. 
 Fig. 1 illustrerer, at forudsigelserne fra både Ridge og Lasso ligger meget tæt på den ideelle diagonale linje, hvilket bekræfter modellernes stærke forudsigende evne.
 
@@ -59,4 +59,44 @@ Fig. 1 illustrerer, at forudsigelserne fra både Ridge og Lasso ligger meget tæ
     \label{fig:regression}
 \end{figure}
 
+\subsection{Klassifikationsanalyse (High Efficiency Prediction)}
 
+Logistisk regressionblev brugt til at klassificere biler som værende 'højeffektiv' (\(mpg > median\)). Efter finjusteringen af parameteren \(C\) via \texttt{LogisticRegressionCV} viste modellen gode diskriminationsevner.
+
+\textbf{Pålidelighed (AUC):} Modellen opnåede en AUC (Area Under the Curve) på \textbf{0.95} på test:
+
+% --- Visualisering 2: ROC Kurve ---
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\columnwidth]{../models/roc_curve_after_finetuning.png}
+    \caption{ROC-kurve for den finjusterede logistiske regressionsmodel, som viser en AUC på 0.95. Linjen ligger langt over den tilfældige gættelinje (Random Guess).}
+    \label{fig:roc}
+\end{figure}
+
+\textbf{Præcision (Forvirringsmatrix):} Forvirringsmatricen (Fig. 3) bekræfter modellens præcise klassifikation. Ud af 79 observationer i testsættet:
+\begin{itemize}
+    \item 36 biler med lav effektivitet blev korrekt klassificeret (True Negatives, TN).
+    \item 36 biler med høj effektivitet blev korrekt klassificeret (True Positives, TP).
+    \item Kun 1 bil blev fejlklassificeret som 'høj', selvom den var 'lav' (False Positive, FP).
+    \item 6 biler blev fejlklassificeret som 'lav', selvom de var 'høj' (False Negatives, FN).
+\end{itemize}
+Dette resulterer i en meget høj \textit{accuracy}, hvilket besvarer, at modellen er yderst pålidelig.
+
+% --- Visualisering 3: Confusion Matrix ---
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\columnwidth]{../models/confusion_matrix_after_finetuning.png}
+    \caption{Forvirringsmatrix for den finjusterede logistiske regressionsmodel. Matricen viser 36 korrekte klassifikationer i hver klasse, hvilket bekræfter pålidelig prædiktion.}
+    \label{fig:cm}
+\end{figure}
+
+\section{Konklusion}
+
+Vi har opnået og finjusteret modeller for både regressions- og klassifikationsproblemer. Regressionsmodellerne (Ridge og Lasso) forudsiger MPG med høj nøjagtighed ($R^2 \approx 0.817$), hvilket indikerer et stærkt lineært forhold mellem de valgte features og brændstofeffektiviteten. Den finjusterede logistiske regressionsmodel er \textbf{yderst pålidelig} og effektiv til binær klassifikation af bilers effektivitet, bekræftet af en AUC på 0.95 og en minimal fejlrate observeret i forvirringsmatricen.
+
+\bibliographystyle{plain}
+\bibliography{references}
+Scikit-learn dokumentation: \texttt{https://scikit-learn.org/stable/documentation.html}
+Fag materiale af Henrik Strøm
+
+\end{document}
